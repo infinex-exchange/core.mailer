@@ -57,7 +57,7 @@ while(true) {
                     $phpMailer -> CharSet = 'UTF-8';
                     $phpMailer -> setFrom(MAIL_FROM, MAIL_FROM_NAME);
                     $phpMailer -> isHTML(true);
-                    $phpMailer -> addEmbeddedImage(__DIR__.'/mail-templates/logo.svg', 'logo');
+                    $phpMailer -> addEmbeddedImage(__DIR__.'/mail-templates/logo.png', 'logo');
                 
                     // Recipient address
                     $phpMailer -> addAddress($row['email']);
