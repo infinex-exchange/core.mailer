@@ -70,6 +70,7 @@ while(true) {
                     // Data
                     $data = json_decode($row['data'], true);
                     $data['email'] = $row['email'];
+                    $data['email_urlencoded'] = urlencode($row['email']);
                     foreach($data as $k => $v) {
                         $tpl = str_replace('{{' . $k . '}}', $v, $tpl);
                     }
