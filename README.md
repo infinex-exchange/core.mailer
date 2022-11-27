@@ -1,5 +1,5 @@
-# vayamos-exchange/mailer
-A daemon that sends e-mails to Vayamos Exchange users
+# infinex-exchange/mailer
+A daemon that sends e-mails to Infinex users
 
 ## Install
 1. Rename `config.sample.inc.php` to `config.inc.php` and configure MariaDB and SMTP connection.
