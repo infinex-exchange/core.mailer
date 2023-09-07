@@ -18,10 +18,10 @@ class App extends Infinex\App\Daemon {
         
         $this -> sender = new Sender($this -> log);
         
-        $this -> queue = new MailQueue($this -> log, $this -> sender);
-        
         $this -> storage = new MailStorage($this -> loop, $this -> log, $this -> sender);
         $this -> storage -> start();
+        
+        $this -> queue = new MailQueue($this -> log, $this -> sender, $this -> storage);
         
         $th = $this;
         $this -> amqp -> on('connect', function() use($th) {
