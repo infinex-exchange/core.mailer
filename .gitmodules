@@ -1,3 +1,3 @@
 [submodule "mail-templates"]
 	path = mail-templates
-	url = git@github.com:infinex-exchange/mail-templates.git
+	url = https://github.com/infinex-exchange/mail-templates.git

@@ -1,5 +1,12 @@
 {
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/infinex-exchange/common"
+        }
+    ],
     "require": {
+        "infinex-exchange/common": "dev-main",
         "phpmailer/phpmailer": "^6.6"
     }
 }
