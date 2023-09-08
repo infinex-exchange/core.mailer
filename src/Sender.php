@@ -30,15 +30,15 @@ class Sender {
         $phpMailer -> CharSet = 'UTF-8';
         $phpMailer -> setFrom(MAIL_FROM, MAIL_FROM_NAME);
         $phpMailer -> isHTML(true);
-        $phpMailer -> addEmbeddedImage(__DIR__.'/mail-templates/logo.png', 'logo');
+        $phpMailer -> addEmbeddedImage(__DIR__.'/../mail-templates/logo.png', 'logo');
             
         // Recipient address
         $phpMailer -> addAddress($to);
 
         // Template
-        $tpl = file_get_contents(__DIR__.'/mail-templates/header.html')
-             . file_get_contents(__DIR__.'/mail-templates/templates/'.$template.'.html')
-             . file_get_contents(__DIR__.'/mail-templates/footer.html');
+        $tpl = file_get_contents(__DIR__.'/../mail-templates/header.html')
+             . file_get_contents(__DIR__.'/../mail-templates/templates/'.$template.'.html')
+             . file_get_contents(__DIR__.'/../mail-templates/footer.html');
             
         // Data
         $data['email'] = $to;
