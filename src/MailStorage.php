@@ -22,12 +22,12 @@ class MailStorage {
         $sql = 'INSERT INTO mails(
                     email,
                     template,
-                    context,
+                    context
                 )
                 VALUES(
                     :email,
                     :template,
-                    :context,
+                    :context
                 )';
         
         $q = $this -> pdo -> prepare($sql);
