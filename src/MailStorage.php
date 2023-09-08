@@ -30,7 +30,7 @@ class MailStorage {
                     :context,
                 )';
         
-        $q = $pdo -> prepare($sql);
+        $q = $this -> pdo -> prepare($sql);
         $q -> execute($task);
     }
 }
