@@ -10,7 +10,7 @@ define('RMQ_PASS', 'password');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'mailer');
 define('DB_PASS', 'password');
-define('DB_NAME', 'mailer');
+define('DB_NAME', 'infinex_mailer');
 
 define('SMTP_HOST', 'localhost');
 define('SMTP_PORT', 587);
