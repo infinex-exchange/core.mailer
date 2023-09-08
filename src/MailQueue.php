@@ -49,7 +49,7 @@ class MailQueue {
             );
         }
         catch(\Exception $e) {
-            $this -> log -> error('Mail sent but not inserted to db: '.json_encode($body));
+            $this -> log -> error('Mail sent but not inserted to db '.json_encode($body).': '.$e -> getMessage());
         }
     }
 }
