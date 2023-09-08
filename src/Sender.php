@@ -62,6 +62,8 @@ class Sender {
 
         // Send
         $phpMailer -> send();
+        
+        $this -> log -> info("Sent mail $template to $to");
     }
 }
 

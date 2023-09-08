@@ -18,7 +18,7 @@ class App extends Infinex\App\Daemon {
         
         $this -> sender = new Sender($this -> log);
         
-        $this -> storage = new MailStorage($this -> loop, $this -> log, $this -> sender);
+        $this -> storage = new MailStorage($this -> log, $this -> pdo);
         $this -> storage -> start();
         
         $this -> queue = new MailQueue($this -> log, $this -> sender, $this -> storage);

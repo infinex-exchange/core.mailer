@@ -27,27 +27,28 @@ class MailQueue {
     }
     
     public function newMail($body) {
-        $sent = false;
-        
         try {
             $this -> sender -> mail(
                 $body['email'],
                 $body['template'],
                 $body['context']
             );
-            
-            $sent = true;
         }
         catch(PHPMailerException $e) {
-            //
+            $this -> log -> error('Failed to send mail '.$body['template'].' to '.$body['email'].': '.$e -> getMessage());
+            throw $e;
         }
         
-        $this -> storage -> addMail(
-            $body['email'],
-            $body['template'],
-            $body['context'],
-            $sent
-        );
+        try {
+            $this -> storage -> insert(
+                $body['email'],
+                $body['template'],
+                $body['context']
+            );
+        }
+        catch(\Exception $e) {
+            $this -> log -> error('Mail sent but not inserted to db: '.json_encode($body));
+        }
     }
 }
 
