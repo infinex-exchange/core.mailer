@@ -33,6 +33,8 @@ class MailQueue {
                 $body['template'],
                 $body['context']
             );
+            
+            $this -> log -> info('Sent mail '.$body['template'].' to '.$body['email']);
         }
         catch(PHPMailerException $e) {
             $this -> log -> error('Failed to send mail '.$body['template'].' to '.$body['email'].': '.$e -> getMessage());
