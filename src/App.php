@@ -11,7 +11,7 @@ class App extends Infinex\App\Daemon {
     private $storage;
     
     function __construct() {
-        parent::__construct('auth.api-auth');
+        parent::__construct('mailer.mailer');
         
         $this -> pdo = new Infinex\Database\PDO($this -> loop, $this -> log);
         $this -> pdo -> start();
