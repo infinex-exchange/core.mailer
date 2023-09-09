@@ -16,7 +16,7 @@ class MailStorage {
         $task = [
             ':email' => $email,
             ':template' => $template,
-            ':context' => json_encode($context)
+            ':context' => json_encode($context, JSON_UNESCAPED_SLASHES)
         ];
         
         $sql = 'INSERT INTO mails(
