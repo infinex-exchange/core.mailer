@@ -1,13 +1,32 @@
 <?php
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 
 class Sender {
     private $log;
+    private $host;
+    private $port;
+    private $user;
+    private $pass;
+    private $from;
+    private $fromName;
     
-    function __construct($log) {
+    function __construct(
+        $log,
+        $host,
+        $port,
+        $user,
+        $pass,
+        $from,
+        $fromName
+    ) {
         $this -> log = $log;
+        $this -> host = $host;
+        $this -> port = $port;
+        $this -> user = $user;
+        $this -> pass = $pass;
+        $this -> from = $from;
+        $this -> fromName = $fromName;
         
         $this -> log -> debug('Initialized sender');
     }
@@ -17,37 +36,34 @@ class Sender {
 
         // SMTP server settings
         $phpMailer -> IsSMTP();
-        $phpMailer -> Host = SMTP_HOST;
-        $phpMailer -> Port = SMTP_PORT;
+        $phpMailer -> Host = $this -> host;
+        $phpMailer -> Port = $this -> port;
         $phpMailer -> SMTPAutoTLS = true;
-        $phpMailer -> SMTPAuth = SMTP_AUTH;
-        if(SMTP_AUTH) {
-            $phpMailer -> Username = SMTP_USER;
-            $phpMailer -> Password = SMTP_PASS;
+        $phpMailer -> SMTPAuth = ($this -> user != '' && this -> pass != '');
+        if($phpMailer -> SMTPAuth) {
+            $phpMailer -> Username = $this -> user;
+            $phpMailer -> Password = $this -> pass;
         }
             
-        // Message general
+        // Message headers
         $phpMailer -> CharSet = 'UTF-8';
-        $phpMailer -> setFrom(MAIL_FROM, MAIL_FROM_NAME);
+        $phpMailer -> setFrom($this -> from, $this -> fromName);
         $phpMailer -> isHTML(true);
-        $phpMailer -> addEmbeddedImage(__DIR__.'/../mail-templates/logo.png', 'logo');
-            
-        // Recipient address
         $phpMailer -> addAddress($to);
-
-        // Template
+        
+        // Message rendering
+        $phpMailer -> addEmbeddedImage(__DIR__.'/../mail-templates/logo.png', 'logo');
+        
         $tpl = file_get_contents(__DIR__.'/../mail-templates/header.html')
              . file_get_contents(__DIR__.'/../mail-templates/templates/'.$template.'.html')
              . file_get_contents(__DIR__.'/../mail-templates/footer.html');
-            
-        // Data
+        
         $data['email'] = $to;
         $data['email_urlencoded'] = urlencode($to);
         foreach($data as $k => $v) {
             $tpl = str_replace('{{' . $k . '}}', $v, $tpl);
         }
-            
-        // Extract subject from template
+        
         $phpMailer -> Subject = '';
         $subjectTag = strpos($tpl, '[[SUBJECT: ');
         if($subjectTag !== false) {
@@ -58,6 +74,7 @@ class Sender {
                 $phpMailer -> Subject = $subject;
             }
         }
+        
         $phpMailer -> Body = $tpl;  
 
         // Send

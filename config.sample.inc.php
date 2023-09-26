@@ -2,19 +2,19 @@
 
 define('LOG_LEVEL', 0);
 
-define('RMQ_HOST', 'localhost');
-define('RMQ_PORT', 5672);
-define('RMQ_USER', 'mailer');
-define('RMQ_PASS', 'password');
+define('AMQP_HOST', 'localhost');
+define('AMQP_PORT', 5672);
+define('AMQP_USER', 'core.mailer');
+define('AMQP_PASS', 'password');
+define('AMQP_VHOST', '/');
 
 define('DB_HOST', 'localhost');
-define('DB_USER', 'mailer');
+define('DB_USER', 'core.mailer');
 define('DB_PASS', 'password');
-define('DB_NAME', 'infinex_mailer');
+define('DB_NAME', 'core.mailer');
 
 define('SMTP_HOST', 'localhost');
 define('SMTP_PORT', 587);
-define('SMTP_AUTH', true);
 define('SMTP_USER', 'app@infinex.cc');
 define('SMTP_PASS', 'password');
 

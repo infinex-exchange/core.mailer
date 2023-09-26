@@ -1,56 +1,98 @@
 <?php
 
-use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use React\Promise;
 
 class MailQueue {
     private $log;
+    private $amqp;
     private $sender;
     private $storage;
     
-    function __construct($log, $sender, $storage) {
+    function __construct($log, $amqp, $sender, $storage) {
         $this -> log = $log;
+        $this -> amqp = $amqp;
         $this -> sender = $sender;
         $this -> storage = $storage;
         
-        $this -> log -> debug('Initialized mail queue worker');
+        $this -> log -> debug('Initialized mail queue consumer');
     }
     
-    public function bind($amqp) {
+    public function start() {
         $th = $this;
         
-        $amqp -> sub(
+        return $this -> amqp -> sub(
             'mail',
             function($body) use($th) {
                 return $th -> newMail($body);
+            }
+        ) -> then(
+            function() use($th) {
+                $th -> log -> info('Started mail queue consumer');
+            }
+        ) -> catch(
+            function($e) use($th) {
+                $th -> log -> error('Failed to start mail queue consumer: '.((string) $e));
+                throw $e;
+            }
+        );
+    }
+    
+    public function stop() {
+        $th = $this;
+        
+        return $this -> amqp -> unsub('mail') -> then(
+            function() use ($th) {
+                $th -> log -> info('Stopped mail queue consumer');
+            }
+        ) -> catch(
+            function($e) use($th) {
+                $th -> log -> error('Failed to stop mail queue consumer: '.((string) $e));
             }
         );
     }
     
     public function newMail($body) {
-        try {
-            $this -> sender -> mail(
-                $body['email'],
-                $body['template'],
-                $body['context']
-            );
-            
-            $this -> log -> info('Sent mail '.$body['template'].' to '.$body['email']);
-        }
-        catch(PHPMailerException $e) {
-            $this -> log -> error('Failed to send mail '.$body['template'].' to '.$body['email'].': '.$e -> getMessage());
-            throw $e;
-        }
+        $th = $this;
         
-        try {
-            $this -> storage -> insert(
-                $body['email'],
-                $body['template'],
-                $body['context']
+        $promise = null;
+        if(isset($body['email']))
+            $promise = Promise\resolve($body['email']);
+        else
+            $promise = $this -> amqp -> call(
+                'account.accountd',
+                'uidToEmail',
+                [ 'uid' => $body['uid'] ]
             );
-        }
-        catch(\Exception $e) {
-            $this -> log -> error('Mail sent but not inserted to db '.json_encode($body).': '.$e -> getMessage());
-        }
+        
+        return $promise -> then(
+            function($email) use($th, $body) {
+                try {
+                    $th -> sender -> mail(
+                        $body['email'],
+                        $body['template'],
+                        $body['context']
+                    );
+                
+                    $th -> log -> info('Sent mail '.$body['template'].' to '.$body['email']);
+                }
+                catch(\Exception $e) {
+                    $th -> log -> error('Failed to send mail '.$body['template'].' to '.$body['email'].': '.((string) $e));
+                    throw $e;
+                }
+            
+                try {
+                    $this -> storage -> insert(
+                        $body['uid'],
+                        $email,
+                        $body['template'],
+                        $body['context']
+                    );
+                }
+                catch(\Exception $e) {
+                    $th -> log -> error('Mail sent but not inserted to db '.json_encode($body).': '.((string) $e));
+                }
+            }
+        );
     }
 }
 
