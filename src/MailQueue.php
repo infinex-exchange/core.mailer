@@ -68,7 +68,7 @@ class MailQueue {
             function($email) use($th, $body) {
                 try {
                     $th -> sender -> mail(
-                        $body['email'],
+                        $email,
                         $body['template'],
                         $body['context']
                     );

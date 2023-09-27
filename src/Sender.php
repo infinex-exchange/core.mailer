@@ -39,7 +39,7 @@ class Sender {
         $phpMailer -> Host = $this -> host;
         $phpMailer -> Port = $this -> port;
         $phpMailer -> SMTPAutoTLS = true;
-        $phpMailer -> SMTPAuth = ($this -> user != '' && this -> pass != '');
+        $phpMailer -> SMTPAuth = ($this -> user != '' && $this -> pass != '');
         if($phpMailer -> SMTPAuth) {
             $phpMailer -> Username = $this -> user;
             $phpMailer -> Password = $this -> pass;
