@@ -73,10 +73,10 @@ class MailQueue {
                         $body['context']
                     );
                 
-                    $th -> log -> info('Sent mail '.$body['template'].' to '.$body['email']);
+                    $th -> log -> info('Sent mail '.$body['template'].' to '.$email);
                 }
                 catch(\Exception $e) {
-                    $th -> log -> error('Failed to send mail '.$body['template'].' to '.$body['email'].': '.((string) $e));
+                    $th -> log -> error('Failed to send mail '.$body['template'].' to '.$email.': '.((string) $e));
                     throw $e;
                 }
             
