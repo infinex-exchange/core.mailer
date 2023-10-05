@@ -59,7 +59,7 @@ class MailQueue {
             $promise = Promise\resolve($body['email']);
         else
             $promise = $this -> amqp -> call(
-                'account.accountd',
+                'account.account',
                 'uidToEmail',
                 [ 'uid' => $body['uid'] ]
             );
