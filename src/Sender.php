@@ -58,6 +58,8 @@ class Sender {
              . file_get_contents(__DIR__.'/../mail-templates/templates/'.$template.'.html')
              . file_get_contents(__DIR__.'/../mail-templates/footer.html');
         
+        if(!is_array($data))
+            $data = [];
         $data['email'] = $to;
         $data['email_urlencoded'] = urlencode($to);
         foreach($data as $k => $v) {
