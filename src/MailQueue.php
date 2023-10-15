@@ -61,6 +61,16 @@ class MailQueue {
             return;
         }
         
+        if(!is_string($body['template'])) {
+            $this -> log -> error('Ignoring mail with invalid template');
+            return;
+        }
+        
+        if(isset($body['context'] && !is_array($body['context'])) {
+            $this -> log -> error('Ignoring mail with non-array context');
+            return;
+        }
+        
         if(isset($body['email'])) {
             if(!validateEmail($body['email'])) {
                 $this -> log -> error('Ignoring mail with invalid email address');

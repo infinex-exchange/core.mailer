@@ -58,13 +58,13 @@ class Sender {
              . file_get_contents(__DIR__.'/../mail-templates/templates/'.$template.'.html')
              . file_get_contents(__DIR__.'/../mail-templates/footer.html');
         
-        if(!is_array($data))
+        if(!$data)
             $data = [];
         $data['email'] = $to;
         $data['email_urlencoded'] = urlencode($to);
         foreach($data as $k => $v) {
             if(!is_string($v)) {
-                $this -> log -> warn("Non-string value of $k in mail $template to $to");
+                // TODO: recursive parser {{xx.yy.zz}}
                 continue;
             }
             $tpl = str_replace('{{' . $k . '}}', $v, $tpl);
