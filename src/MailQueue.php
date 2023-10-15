@@ -1,5 +1,7 @@
 <?php
 
+use Infinex\Exceptions\Error;
+use function Infinex\Validation\validateEmail;
 use React\Promise;
 
 class MailQueue {
@@ -54,43 +56,69 @@ class MailQueue {
     public function newMail($body) {
         $th = $this;
         
+        if(!isset($body['template'])) {
+            $this -> log -> error('Ignoring mail without template');
+            return;
+        }
+        
+        if(isset($body['email'])) {
+            if(!validateEmail($body['email'])) {
+                $this -> log -> error('Ignoring mail with invalid email address');
+                return;
+            }
+        }
+        else if(!isset($body['uid']))
+            $this -> log -> error('Ignoring mail without uid and email address');
+            return;
+        }
+        
         $promise = null;
         if(isset($body['email']))
-            $promise = Promise\resolve($body['email']);
+            $promise = Promise\resolve([
+                'email' => $body['email']
+            ]);
         else
             $promise = $this -> amqp -> call(
                 'account.account',
-                'uidToEmail',
+                'getUser',
                 [ 'uid' => $body['uid'] ]
             );
         
         return $promise -> then(
-            function($email) use($th, $body) {
+            function($user) use($th, $body) {
                 try {
                     $th -> sender -> mail(
-                        $email,
+                        $user['email'],
                         $body['template'],
-                        $body['context']
+                        @$body['context']
                     );
                 
-                    $th -> log -> info('Sent mail '.$body['template'].' to '.$email);
+                    $th -> log -> info('Sent mail '.$body['template'].' to '.$user['email']);
                 }
                 catch(\Exception $e) {
-                    $th -> log -> error('Failed to send mail '.$body['template'].' to '.$email.': '.((string) $e));
+                    $th -> log -> error('Failed to send mail '.$body['template'].' to '.$user['email'].': '.((string) $e));
                     throw $e;
                 }
             
                 try {
                     $this -> storage -> insert(
-                        $body['uid'],
-                        $email,
+                        @$body['uid'],
+                        $user['email'],
                         $body['template'],
-                        $body['context']
+                        @$body['context']
                     );
                 }
                 catch(\Exception $e) {
                     $th -> log -> error('Mail sent but not inserted to db '.json_encode($body).': '.((string) $e));
                 }
+            },
+            
+            function(Error $e) use($th, $body) {
+                if($e -> getStrCode() == 'NOT_FOUND') {
+                    $th -> log -> error('Ignoring mail to non existing user '.$body['uid']);
+                    return;
+                }
+                throw $e;
             }
         );
     }
