@@ -72,7 +72,7 @@ class MailQueue {
             return;
         }
         
-        if(isset($body['email'] && !validateEmail($body['email'])) {
+        if(isset($body['email']) && !validateEmail($body['email'])) {
             $this -> log -> error('Ignoring mail with invalid email address');
             return;
         }
