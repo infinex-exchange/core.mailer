@@ -82,7 +82,7 @@ class MailQueue {
             return;
         }
         
-        if(isset($body['context'] && !is_array($body['context'])) {
+        if(isset($body['context']) && !is_array($body['context'])) {
             $this -> log -> error('Ignoring mail with non-array context');
             return;
         }
