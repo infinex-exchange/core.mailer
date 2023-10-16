@@ -1,6 +1,7 @@
 <?php
 
 use Infinex\Exceptions\Error;
+use function Infinex\Validation\validateId;
 use function Infinex\Validation\validateEmail;
 use React\Promise;
 
@@ -56,8 +57,23 @@ class MailQueue {
     public function newMail($body) {
         $th = $this;
         
+        if(!isset($body['uid']) && !isset($body['email'])) {
+            $this -> log -> error('Ignoring mail without uid or email');
+            return;
+        }
+        
         if(!isset($body['template'])) {
             $this -> log -> error('Ignoring mail without template');
+            return;
+        }
+        
+        if(isset($body['uid']) && !validateId($body['uid'])) {
+            $this -> log -> error('Ignoring mail with invalid uid');
+            return;
+        }
+        
+        if(isset($body['email'] && !validateEmail($body['email'])) {
+            $this -> log -> error('Ignoring mail with invalid email address');
             return;
         }
         
@@ -68,17 +84,6 @@ class MailQueue {
         
         if(isset($body['context'] && !is_array($body['context'])) {
             $this -> log -> error('Ignoring mail with non-array context');
-            return;
-        }
-        
-        if(isset($body['email'])) {
-            if(!validateEmail($body['email'])) {
-                $this -> log -> error('Ignoring mail with invalid email address');
-                return;
-            }
-        }
-        else if(!isset($body['uid']))
-            $this -> log -> error('Ignoring mail without uid and email address');
             return;
         }
         
